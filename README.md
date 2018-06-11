@@ -6,3 +6,7 @@ It is meant to be statically linked so it could easily be put in chroot jail.
 Effectively it is just `/bin/true` linked statically.  Upon login it will just
 exit. If login has terminal allocated, it will log this event as it would
 mean, the user tried to login interactively.
+
+## Links
+
+- https://news.ycombinator.com/item?id=12206628
