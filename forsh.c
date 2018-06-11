@@ -3,12 +3,23 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <syslog.h>
+#include <pwd.h>
 
 int main(int argc, char **argv)
 {
+  uid_t uid;
+  struct passwd *pw;
+
   if (isatty(fileno(stdout))) {
     openlog("forsh", LOG_PID, LOG_AUTH);
-    syslog(LOG_NOTICE, "user %d attempted to login interactively", getuid());
+    uid = getuid();
+    pw = getpwuid(uid);
+    if (pw == NULL) {
+      syslog(LOG_ERR, "uname to get user name for UID %d. Aborting!", uid);
+      closelog();
+      abort();
+    }
+    syslog(LOG_NOTICE, "user %s (UID %d) attempted to login interactively", pw->pw_name, uid);
     closelog();
     puts ("You are not allowed to login inteactively to this system. This incident will be reported.");
   }
