@@ -20,6 +20,10 @@ recompile. Options are:
   `sssd.conf` may contain passwords for LDAP) and you may decide you don't
   want to have them in the chrooted environment. In this case you may disable
   username resolution and `forsh` will only log user ID.
+
+- **LOG_FACILITY** allows to change syslog(3) facility used by `forsh`.
+  Default is **LOG_AUTH** which is compatible with the default value for
+  OpenSSH.
   
 
 ## Links

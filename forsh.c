@@ -12,7 +12,7 @@ int main(int argc, char **argv)
   struct passwd *pw;
 
   if (isatty(fileno(stdout))) {
-    openlog("forsh", LOG_PID, LOG_AUTH);
+    openlog("forsh", LOG_PID, LOG_FACILITY);
     uid = getuid();
 #ifdef RESOLVE_USERNAME
     pw = getpwuid(uid);
