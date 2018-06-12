@@ -22,8 +22,8 @@ recompile. Options are:
   username resolution and `forsh` will only log user ID.
 
 - **LOG_FACILITY** allows to change syslog(3) facility used by `forsh`.
-  Default is **LOG_AUTH** which is compatible with the default value for
-  OpenSSH.
+  Default is **LOG_AUTH** which is compatible with the [default value for
+  OpenSSH](https://man.openbsd.org/sshd_config#SyslogFacility).
   
 
 ## Links
