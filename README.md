@@ -7,6 +7,21 @@ Effectively it is just `/bin/true` linked statically.  Upon login it will just
 exit. If login has terminal allocated, it will log this event as it would
 mean, the user tried to login interactively.
 
+## Configuration
+Configuration is compile-time and is done via `config.h` file. Edit it and
+recompile. Options are:
+
+- **RESOLVE_USERNAME** is used to control, if `forsh` will call `getpwuid()`
+  to convert user ID of a logging-in user into username. To successfully run
+  `getpwuid()` one need NSS subsystem fully functioning. In a case of chrooted
+  environment this requires `nsswitch.conf` files together with used NSS
+  libraries, possibly real `passwd` file and/or other configuration and binary
+  files like `sssd`-related stuff. Those files might be sensitive (i.e.,
+  `sssd.conf` may contain passwords for LDAP) and you may decide you don't
+  want to have them in the chrooted environment. In this case you may disable
+  username resolution and `forsh` will only log user ID.
+  
+
 ## Links
 
 - https://news.ycombinator.com/item?id=12206628
