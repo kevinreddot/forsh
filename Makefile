@@ -1,4 +1,4 @@
-forsh: forsh.c
+forsh: forsh.c config.h
 	gcc -o forsh -static -O2 forsh.c
 	strip forsh
 

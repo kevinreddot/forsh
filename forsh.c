@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <pwd.h>
+#include "config.h"
 
 int main(int argc, char **argv)
 {
