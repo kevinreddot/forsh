@@ -33,7 +33,7 @@ void log_user(char *ssh_command)
   closelog();
 }
 
-int main(int argc, char **argv)
+int main()
 {
   char *ssh_command;
 
