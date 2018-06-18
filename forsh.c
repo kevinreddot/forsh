@@ -21,12 +21,12 @@ void log_user(char *ssh_command)
     abort();
   }
   if (ssh_command) 
-    syslog(LOG_NOTICE, "user %s (UID %d) attempted to run %s", pw->pw_name, uid, ssh_command);
+    syslog(LOG_NOTICE, "user %s (UID %d) attempted to run \"%s\"", pw->pw_name, uid, ssh_command);
   else
     syslog(LOG_NOTICE, "user %s (UID %d) attempted to login interactively", pw->pw_name, uid);
 #else
   if (ssh_command)
-    syslog(LOG_NOTICE, "user ID %d attempted to run %s", uid, ssh_command);
+    syslog(LOG_NOTICE, "user ID %d attempted to run \"%s\"", uid, ssh_command);
   else
     syslog(LOG_NOTICE, "user ID %d attempted to login interactively", uid);
 #endif
