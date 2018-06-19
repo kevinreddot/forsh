@@ -1,25 +1,27 @@
-**forsh** is "forwarder's shell". It is intended to be used on ssh jump hosts
-as a shell for users only doing port forwarding. It can also could be in
-conjunction with `ForceCommand` directive of `sshd`.
+**forsh** stands for "forwarder's shell". It is intended to be used on ssh
+jump hosts as a shell for users only doing port forwarding. It can also could
+be in conjunction with `ForceCommand` directive of `sshd`.
 
-It can be statically linked and easily be put in a chroot jail.
-Effectively, it is just `/bin/true` with some logging.  Upon login it will just
-exit. If login has a terminal allocated, it will log this event as it would
-mean that the user tried to login interactively.
+It can be statically linked and easily be put in a chroot jail.  Effectively,
+it is just `/bin/true` with some logging.  If a user attempts to login
+interactively or run a command, **forsh** will log this attempt. If user just
+requests port forwarding or stdin/stdout/stderr forwarding (as `ProxyJump` and
+`-W` do), this is not considered a violation and nothing is logged.
 
 ## Configuration
-Configuration is at compile-time and is done via `config.h` file. Edit it and
+Configuration is done at compile-time via `config.h` file. Edit it and
 recompile. Options are:
 
-- **RESOLVE_USERNAME** is used to control if `forsh` will call `getpwuid()`
-  to convert user ID of a logging-in user into username. To successfully run
-  `getpwuid()` one needs a fully functioning NSS subsystem. In a case of a chrooted
-  environment this requires `nsswitch.conf` files together with the NSS
+- **RESOLVE_USERNAME** is used to allow `forsh` 
+  to convert user ID of a logging-in user into username via `getpwuid()`
+  function. You need a fully functioning NSS subsystem in order to
+  successfully run `getpwuid()`. In a case of a chrooted
+  environment this requires `nsswitch.conf` files along with the NSS
   libraries being used, possibly a real `passwd` file and/or other configuration and binary
-  files like `sssd`-related stuff. Those files might be sensitive (i.e.,
-  `sssd.conf` may contain passwords for LDAP) and you may decide you don't
-  want to have them in the chrooted environment. In this case you should disable the
-  username resolution and `forsh` will only log user ID.
+  files like `sssd`-related stuff. Some of files might be sensitive, E.g.,
+  `sssd.conf` may contain passwords for LDAP server. In this case you can
+  simply undefine **RESOLVE_USERNAME** effectively disabling username
+  resolution and **forsh** will only log user ID.
 
 - **LOG_FACILITY** allows to change syslog(3) facility used by `forsh`.
   Default is **LOG_AUTH** which is compatible with the [default value for
@@ -29,9 +31,9 @@ recompile. Options are:
 There are different ways to use **forsh** in your system, I will only
 highlight some of them.
 
-**WARNING:** modifying the sshd configuration may lock you out of your bastion
-host! Make sure, you have a way to revert things, if you break your
-`sshd_config`.
+**WARNING:** modifying sshd configuration may lock you out of your bastion
+host! You might break your `sshd_config`, in order to avoid such situation make
+sure you have a way to revert things.
 
 Assuming that your bastion host uses the centralizied
 [name resolution service](https://en.wikipedia.org/wiki/Name_Service_Switch),
