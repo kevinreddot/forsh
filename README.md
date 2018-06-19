@@ -88,7 +88,22 @@ Match Group admins
   ForceCommand none
 ```
 
-## Links
+## Client setup
+If your bastion host is configured as discussed above, the client setup
+involves just using `ProxyJump` directive for the servers behind the bastion
+host.
 
+For example, if servers in your datacenter belong to `.dc.example.com` and your
+bastion host is reachable as `bastion.example.com`, you can set your
+`~/.ssh/config` as the following:
+
+```
+Host *.dc.example.com
+  ProxyJump bastion.example.com
+```
+
+For more details, refer to [ssh manual](https://man.openbsd.org/ssh_config).
+
+## Links
 - https://news.ycombinator.com/item?id=12206628
 - https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Proxies_and_Jump_Hosts
