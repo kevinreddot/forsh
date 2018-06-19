@@ -107,3 +107,4 @@ For more details, refer to [ssh manual](https://man.openbsd.org/ssh_config).
 ## Links
 - https://news.ycombinator.com/item?id=12206628
 - https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Proxies_and_Jump_Hosts
+- [Securing Secure Shell](https://stribika.github.io/2015/01/04/secure-secure-shell.html)
