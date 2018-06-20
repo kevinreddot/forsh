@@ -7,8 +7,7 @@ License:        Unlicense
 URL:            https://github.com/ivladdalvi/forsh
 Source0:        https://github.com/ivladdalvi/forsh/archive/v1.0.tar.gz
 
-BuildRequires:  gcc
-BuildRequires:  make
+BuildRequires:  gcc make
 Requires:       syslog
 
 %description
@@ -24,7 +23,6 @@ attempt. If user just requests port forwarding or stdin/stdout/stderr forwarding
 
 
 %build
-%configure
 make %{?_smp_mflags}
 
 
@@ -34,8 +32,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %files
-%doc
+%doc README.md
+%license LICENSE
+%{_bindir}/forsh
 
 
 
 %changelog
+* Wed Jun 20 2018 Vladimir Ivanov <ivlad@yandex.com> - 1.0-1
+- first build

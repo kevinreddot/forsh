@@ -6,5 +6,5 @@ clean:
 	rm -f forsh
 
 install: forsh
-	mkdir -p $(DESTDIR)/usr/local/bin
-	install -o 0 -g 0 -m 0755 forsh $(DESTDIR)/usr/local/bin/cello
+	mkdir -p $(DESTDIR)/usr/bin
+	install -o 0 -g 0 -m 0755 forsh $(DESTDIR)/usr/bin/forsh
