@@ -1,41 +1,40 @@
 #include <sys/types.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdio.h>
 #include <syslog.h>
 #include <pwd.h>
 #include "config.h"
 
-void log_user(char *ssh_command) 
+void log_user(uid_t uid) 
 {
-  uid_t uid;
-  struct passwd *pw;
+  char *login;
 
-  openlog("forsh", LOG_PID, LOG_FACILITY);
-  uid = getuid();
-#ifdef RESOLVE_USERNAME
-  pw = getpwuid(uid);
-  if (pw == NULL) {
-    syslog(LOG_ERR, "uname to get user name for UID %d. Aborting!", uid);
-    closelog();
-    abort();
-  }
-  if (ssh_command) 
-    syslog(LOG_NOTICE, "user %s (UID %d) attempted to run \"%s\"", pw->pw_name, uid, ssh_command);
-  else
-    syslog(LOG_NOTICE, "user %s (UID %d) attempted to login interactively", pw->pw_name, uid);
-#else
-  if (ssh_command)
-    syslog(LOG_NOTICE, "user ID %d attempted to run \"%s\"", uid, ssh_command);
+  login = getenv("USER");
+  if (login)
+    syslog(LOG_NOTICE, "user %s (UID %d) attempted to login interactively", login, uid);
   else
     syslog(LOG_NOTICE, "user ID %d attempted to login interactively", uid);
-#endif
   closelog();
+  return;
+}
+
+void log_command(uid_t uid, char *ssh_command)
+{
+  char *login;
+
+  login = getenv("USER");
+  if (login)
+    syslog(LOG_NOTICE, "user %s (UID %d) attempted to run \"%s\"", login, uid, ssh_command);
+  else
+    syslog(LOG_NOTICE, "user ID %d attempted to run \"%s\"", uid, ssh_command);
+  return;
 }
 
 int main()
 {
   char *ssh_command;
+  uid_t uid;
 
   /*
 
@@ -48,8 +47,14 @@ int main()
 
   */
 
+  uid = getuid();
+  openlog("forsh", LOG_PID, LOG_FACILITY);
   ssh_command = getenv("SSH_ORIGINAL_COMMAND");
-  log_user(ssh_command);
+  if (ssh_command)
+    log_command(uid, ssh_command);
+  else
+    log_user(uid);
+  closelog();
   puts ("You are not allowed to login to this system. This incident will be reported.");
   return EXIT_SUCCESS;
 }
