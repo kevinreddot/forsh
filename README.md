@@ -1,27 +1,17 @@
 **forsh** stands for "forwarder's shell". It is intended to be used on ssh
 jump hosts as a shell for users only doing port forwarding. It can also could
-be in conjunction with `ForceCommand` directive of `sshd`.
+be in conjunction with `ForceCommand` directive of `sshd`. Effectively, it is
+just `/bin/true` with some logging.
 
-It can be statically linked and easily be put in a chroot jail.  Effectively,
-it is just `/bin/true` with some logging.  If a user attempts to login
-interactively or run a command, **forsh** will log this attempt. If user just
-requests port forwarding or stdin/stdout/stderr forwarding (as `ProxyJump` and
-`-W` do), this is not considered a violation and nothing is logged.
+It can be statically linked and easily be put in a chroot jail.  If a user
+attempts to login interactively or run a command, **forsh** will log this
+attempt. If user just requests port forwarding or stdin/stdout/stderr
+forwarding (as `ProxyJump` and `-W` do), this is not considered a violation
+and nothing is logged.
 
 ## Configuration
 Configuration is done at compile-time via `config.h` file. Edit it and
 recompile. Options are:
-
-- **RESOLVE_USERNAME** is used to allow `forsh` 
-  to convert user ID of a logging-in user into username via `getpwuid()`
-  function. You need a fully functioning NSS subsystem in order to
-  successfully run `getpwuid()`. In a case of a chrooted
-  environment this requires `nsswitch.conf` files along with the NSS
-  libraries being used, possibly a real `passwd` file and/or other configuration and binary
-  files like `sssd`-related stuff. Some of files might be sensitive, E.g.,
-  `sssd.conf` may contain passwords for LDAP server. In this case you can
-  simply undefine **RESOLVE_USERNAME** effectively disabling username
-  resolution and **forsh** will only log user ID.
 
 - **LOG_FACILITY** allows to change syslog(3) facility used by `forsh`.
   Default is **LOG_AUTH** which is compatible with the [default value for
@@ -69,14 +59,8 @@ Match Group admins
 That will be enough for the most uses.
 
 If for some reason you want additional security, you might run **forsh**
-from a chroot() jail. To do so, compile **forsh** as a static binary (add
-`-static` option to gcc in the `Makefile`). I also recommend to unset
-**RESOLVE_USERNAME** option in `config.h` in this case. Otherwise you will have to put all
-NSS configuration into your chroot jail, including credentials to access your
-centralized name service. The result of disabling **RESOLVE_USERNAME** is that
-only uid and not login name will be logged.  
-
-To setup your chroot jail, check the appropriate manual for your distribution.
+from a chroot() jail. To setup your chroot jail, check the appropriate manual
+for your distribution and additional notes in doc/chroot.md
 
 Then, set `ChrootDirectory` directive in `sshd_config` like this:
 
