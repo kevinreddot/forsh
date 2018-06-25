@@ -5,7 +5,6 @@
 #include <syslog.h>
 #include <string.h>
 #include <pwd.h>
-#include <linux/limits.h>
 #include <assert.h>
 #include "config.h"
 
