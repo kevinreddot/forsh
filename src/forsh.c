@@ -6,6 +6,7 @@
 #include <string.h>
 #include <pwd.h>
 #include <linux/limits.h>
+#include <assert.h>
 #include "config.h"
 
 struct scp_info {
@@ -18,12 +19,9 @@ void log_user(uid_t uid)
 {
   char *login;
 
-  login = getenv("USER");
-  if (login)
-    syslog(LOG_NOTICE, "user %s (UID %d) attempted to login interactively", login, uid);
-  else
-    syslog(LOG_NOTICE, "user ID %d attempted to login interactively", uid);
-  closelog();
+  login = getenv("LOGNAME");
+  assert(login);
+  syslog(LOG_NOTICE, "user %s (UID %d) attempted to login interactively", login, uid);
   return;
 }
 
@@ -63,7 +61,8 @@ void log_command(uid_t uid, char *ssh_command)
   struct scp_info scp;
   char dir[5];
 
-  login = getenv("USER");
+  login = getenv("LOGNAME");
+  assert(login);
   scp = is_scp(ssh_command);
   // Check, if this is scp
   if (scp.dir != 0) {
@@ -71,26 +70,16 @@ void log_command(uid_t uid, char *ssh_command)
       strncpy(dir, "to", 3);
     else
       strncpy(dir, "from", 5);
-    if (login)
-      syslog(LOG_NOTICE, "user %s (UID %d) attempted to copy files %s \"%s\" via scp", login, uid, dir, scp.path);
-    else
-      syslog(LOG_NOTICE, "user ID %d attempted to copy files %s \"%s\" via scp", uid, dir, scp.path);
+    syslog(LOG_NOTICE, "user %s (UID %d) attempted to copy files %s \"%s\" via scp", login, uid, dir, scp.path);
   } else 
   // Check, if this is sftp
   if (strncmp(ssh_command + strlen(ssh_command) - strlen("/sftp-server"), "/sftp-server", strlen("/sftp-server")) == 0) {
     // if SSH_ORIGINAL_COMMAND ends with "/sftp-server"
-    if (login)
-      syslog(LOG_NOTICE, "user %s (UID %d) attempted to copy files via sftp", login, uid);
-    else
-      syslog(LOG_NOTICE, "user ID %d attempted to copy files via sftp", uid);
+    syslog(LOG_NOTICE, "user %s (UID %d) attempted to copy files via sftp", login, uid);
   }
   // if this is neither scp not sftp, log command as-is
-  else {
-    if (login)
-      syslog(LOG_NOTICE, "user %s (UID %d) attempted to run \"%s\"", login, uid, ssh_command);
-    else
-      syslog(LOG_NOTICE, "user ID %d attempted to run \"%s\"", uid, ssh_command);
-  }
+  else
+    syslog(LOG_NOTICE, "user %s (UID %d) attempted to run \"%s\"", login, uid, ssh_command);
   free (scp.temp_str);
   return;
 }
