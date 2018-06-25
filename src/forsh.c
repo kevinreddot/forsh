@@ -56,6 +56,8 @@ struct scp_info is_scp(char *ssh_command) {
 
 void log_command(uid_t uid, char *ssh_command)
 {
+  assert(ssh_command);
+
   char *login;
   struct scp_info scp;
   char dir[5];
