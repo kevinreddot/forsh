@@ -65,6 +65,7 @@ void log_command(uid_t uid, char *ssh_command)
 
   login = getenv("USER");
   scp = is_scp(ssh_command);
+  // Check, if this is scp
   if (scp.dir != 0) {
     if (scp.dir > 0)
       strncpy(dir, "to", 3);
@@ -74,21 +75,23 @@ void log_command(uid_t uid, char *ssh_command)
       syslog(LOG_NOTICE, "user %s (UID %d) attempted to copy files %s \"%s\" via scp", login, uid, dir, scp.path);
     else
       syslog(LOG_NOTICE, "user ID %d attempted to copy files %s \"%s\" via scp", uid, dir, scp.path);
-    free (scp.temp_str);
-  } else if (strncmp(ssh_command + strlen(ssh_command) - strlen("/sftp-server"), "/sftp-server", strlen("/sftp-server")) == 0) {
+  } else 
+  // Check, if this is sftp
+  if (strncmp(ssh_command + strlen(ssh_command) - strlen("/sftp-server"), "/sftp-server", strlen("/sftp-server")) == 0) {
     // if SSH_ORIGINAL_COMMAND ends with "/sftp-server"
     if (login)
       syslog(LOG_NOTICE, "user %s (UID %d) attempted to copy files via sftp", login, uid);
     else
       syslog(LOG_NOTICE, "user ID %d attempted to copy files via sftp", uid);
   }
+  // if this is neither scp not sftp, log command as-is
   else {
-    // if this is neither scp not sftp, log command as-is
     if (login)
       syslog(LOG_NOTICE, "user %s (UID %d) attempted to run \"%s\"", login, uid, ssh_command);
     else
       syslog(LOG_NOTICE, "user ID %d attempted to run \"%s\"", uid, ssh_command);
   }
+  free (scp.temp_str);
   return;
 }
 
