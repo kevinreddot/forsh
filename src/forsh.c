@@ -14,16 +14,6 @@ struct scp_info {
   char *temp_str;
 };
 
-void log_user(uid_t uid) 
-{
-  char *login;
-
-  login = getenv("LOGNAME");
-  assert(login);
-  syslog(LOG_NOTICE, "user %s (UID %d) attempted to login interactively", login, uid);
-  return;
-}
-
 struct scp_info is_scp(char *ssh_command) {
   /* 
   When scp is requested, the command passed will be
@@ -54,6 +44,30 @@ struct scp_info is_scp(char *ssh_command) {
   return scp;
 }
 
+int is_sftp(char *ssh_command) {
+  assert(ssh_command);
+  /*
+  When sftp is requested, sshd launches sftp-server configured via Subsystem
+  directive in sshd_config. Environment looks like this:
+
+  SSH_ORIGINAL_COMMAND=/usr/lib/openssh/sftp-server
+
+  Because location of sftp-server is OS-specific, we have it configured via
+  config.h.
+  */
+  return !strncmp(ssh_command, SFTP_LOCATION, strlen(SFTP_LOCATION));
+}
+
+void log_user(uid_t uid) 
+{
+  char *login;
+
+  login = getenv("LOGNAME");
+  assert(login);
+  syslog(LOG_NOTICE, "user %s (UID %d) attempted to login interactively", login, uid);
+  return;
+}
+
 void log_command(uid_t uid, char *ssh_command)
 {
   assert(ssh_command);
@@ -74,10 +88,9 @@ void log_command(uid_t uid, char *ssh_command)
     syslog(LOG_NOTICE, "user %s (UID %d) attempted to copy files %s \"%s\" via scp", login, uid, dir, scp.path);
   } else 
   // Check, if this is sftp
-  if (strncmp(ssh_command + strlen(ssh_command) - strlen("/sftp-server"), "/sftp-server", strlen("/sftp-server")) == 0) {
+  if (is_sftp(ssh_command))
     // if SSH_ORIGINAL_COMMAND ends with "/sftp-server"
     syslog(LOG_NOTICE, "user %s (UID %d) attempted to copy files via sftp", login, uid);
-  }
   // if this is neither scp not sftp, log command as-is
   else
     syslog(LOG_NOTICE, "user %s (UID %d) attempted to run \"%s\"", login, uid, ssh_command);
