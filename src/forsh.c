@@ -15,6 +15,7 @@ struct scp_info {
 };
 
 struct scp_info is_scp(char *ssh_command) {
+  assert(ssh_command);
   /* 
   When scp is requested, the command passed will be
   SSH_ORIGINAL_COMMAND=scp -t /tmp
@@ -41,6 +42,7 @@ struct scp_info is_scp(char *ssh_command) {
   // scp.dir - direction or 0
   // scp.path - path scp uses
   // scp.temp_str - pointer to duped string to free() later
+  assert(scp.dir == 0 || scp.dir == 1 || scp.dir == -1);
   return scp;
 }
 
