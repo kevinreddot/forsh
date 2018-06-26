@@ -1,0 +1,10 @@
+--braces-after-if-line 
+--braces-after-func-def-line
+--brace-indent0 
+--no-tabs
+--no-space-after-function-call-names
+--dont-break-procedure-type
+--line-length131
+--comment-line-length79
+--declaration-comment-column41
+--comment-indentation41
