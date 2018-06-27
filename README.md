@@ -16,6 +16,9 @@ recompile. Options are:
 - **LOG_FACILITY** allows to change syslog(3) facility used by `forsh`.
   Default is **LOG_AUTH** which is compatible with the [default value for
   OpenSSH](https://man.openbsd.org/sshd_config#SyslogFacility).
+
+- **SFTP_LOCATION** is the location of the `sftp-server` binary. It is OS- and
+  distribution-specific. Get the value from your `sshd_config` file.
   
 ## Usage
 There are different ways to use **forsh** in your system, I will only
